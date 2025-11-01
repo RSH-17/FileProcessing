@@ -18,89 +18,95 @@
 template <class _Tp> class Node;
 template <class _Tp> class BST;
 
-/*
-* 아래는 반드시 사용해야하는 Node 클래스입니다.
-* height, size를 제외한 멤버 변수는 추가, 삭제 및 변경이 불가능합니다.
-*/
+// 노드를 정의하는 클래스
 template <class _Tp>
 class Node {
 	public: // Member types
-		typedef _Tp					__key_type;
-		typedef Node<__key_type>*	__node_pointer_type;
+		typedef _Tp					__key_type;				// key의 종류
+		typedef Node<__key_type>*	__node_pointer_type;	// 위에서 정한 타입의 key 값을 갖는 노드를 가르키는 포인터
 	
 	public: // Member variables
-		__key_type			__key_;
-		__node_pointer_type	__left_;
-		__node_pointer_type	__right_;
+		__key_type			__key_;							// 실제 키 값이 저장될 변수
+		__node_pointer_type	__left_;						// 왼쪽 서브트리의 루트 노드를 가르키는 변수
+		__node_pointer_type	__right_;						// 오른쪽 서브트리의 루트 노드를 가르키는 변수
+
+		unsigned __height_;										// 트리의 높이를 나타내는 변수
+		unsigned __size_;										// 트리의 크기를 나타내는 변수
 	
 	public: // Constructor
-		Node(): __key_(__key_type()), __left_(nullptr), __right_(nullptr) {} // __key_type()의 기본값으로 키값 초기화
-		Node(const __key_type& key): __key_(key), __left_(nullptr), __right_(nullptr) {} // const 주소 형태이기 때문에 상수도 받을 수 있음.
+		Node(): __key_(__key_type()), __left_(nullptr), __right_(nullptr), __height_(1), __size_(1) {}					// __key_type()의 기본값으로 key값 초기화한 노드 생성자
+		Node(const __key_type& key): __key_(key), __left_(nullptr), __right_(nullptr), __height_(1), __size_(1) {}		// 입력 받은 key값 노드 생성장  (const 주소 형태이기 때문에 상수도 받을 수 있음.)
 
-	/*
-	* 아래는 inorder traversal을 대체할 수 있는 operator<< 입니다.
-	* 반드시 아래의 함수를 사용해야할 필요는 없습니다.
-	*/
-    // 출력 연산자 << 을 오버로딩하는 형태 (std::cout << np 할 때의 결과)
+    // 출력 연산자 << 을 오버로딩하는 형태 (std::cout << np 할 때의 결과), inorder 함수 대체
 	friend std::ostream& operator<<(std::ostream& os, const __node_pointer_type& np) {
-		// write your own code here
-		// os << "print할 내용"
+		// np가 nullptr이 아니라면 지정된 형식으로 출력 (left, right도 __node_pointer_type이기 때문에 stack의 형식으로 실행)
 		if (np != nullptr)
 			os << "<" << np->__left_ << " " << np->__key_ << " " << np->__right_ << ">";
 		return os;
 	}
 };
 
-/*
-* 아래 함수들의 설계 방식은 Tree와 Node의 구동부를 구현하기 위해 추천드리는 설계 방식입니다.
-* 반드시 아래의 설계 방식을 따라야 하는 것은 아닙니다.
-*/
+// int 두 개를 비교하여 큰 수를 반환하는 함수
+unsigned max(unsigned a, unsigned b)
+{
+	return (a > b) ? a : b;
+}
 
+// 노드의 높이를 반환하는 함수
 template <class _NodePtr> // _NodePtr은 이미 주소를 넘겨받는다.
 unsigned __height(_NodePtr __x) {  // unsigned int의 약어
-	if (__x == nullptr)
+	// 주어진 노드의 높이를 재귀적으로 구하는 법
+	/*if (__x == nullptr)
 		return 0;
 
 	unsigned lh = __height(__x->__left_);
 	unsigned rh = __height(__x->__right_);
 
-	return (lh > rh) ? lh + 1 : rh + 1;
-	// 이 재귀 함수를 stack에 넣어야 하나? 일단 pass
+	return (lh > rh) ? lh + 1 : rh + 1;*/
+
+	// 노드의 높이를 멤버 변수로 넣었을 때
+	return __x.__height_;
 }
 
+// 노드의 크기를 반환하는 함수
 template <class _NodePtr>
 unsigned __size(_NodePtr __x) {
-	if (__x == nullptr)
+	// 주어진 노드의 크기를 재귀적으로 구하는 법
+	/*if (__x == nullptr)
 		return 0;
 	
-	return __size(__x->__left_) + __size(__x->__right_)  + 1;
-	// 이 재귀 함수를 stack에 넣어야 하나? 일단 pass
+	return __size(__x->__left_) + __size(__x->__right_)  + 1;*/
+
+	// 노드의 크기를 멤버 변수로 넣었을 때
+	return __x.__size_;
 }
 
-/*
-* 아래 함수는 minNode와 동일한 역할을 하는 함수입니다.
-* 매개 변수 타입과 반환 타입을 참조 타입으로 수정하셔도 무방합니다.
-*/
+// 주어진 노드를 루트 노드로 하는 트리에서 최소 key값을 가진 노드를 찾는 함수
 template <class _NodePtr>
-_NodePtr __tree_min(_NodePtr __x) { // 왼쪽을 따라가면 나옴
-	if (__x->__left_ == nullptr) return __x;
-	return __tree_min(__x->__left_);
+_NodePtr __tree_min(_NodePtr __x, std::stack<_NodePtr>& stk) {
+	// 왼쪽을 따라가면 나옴
+	while (__x->__left_ != nullptr) 
+	{
+		stk.push(__x);
+		__x = __x->__left_;
+	}
+	return __x;
 }
 
-/*
-* 아래 함수는 maxNode와 동일한 역할을 하는 함수입니다.
-* 매개 변수 타입과 반환 타입을 참조 타입으로 수정하셔도 무방합니다.
-*/
+// 주어진 노드를 루트 노드로 하는 트리에서 최대 key값을 가진 노드를 찾는 함수
 template <class _NodePtr>
-_NodePtr __tree_max(_NodePtr __x) { // 오른쪽을 따라가면 나옴
-	if (__x->__right_ == nullptr) return __x;
-	return __tree_max(__x->__right_);
+_NodePtr __tree_max(_NodePtr __x, std::stack<_NodePtr>& stk) {
+	// 오른쪽을 따라가면 나옴
+	while (__x->__right_ != nullptr)
+	{
+		stk.push(__x);
+		__x = __x->__right_;
+	}
+	return __x;
 }
 
-/*
-* PDF에 명시되어있는 출력 형식에 유의하세요.
-* ❗️잘못된 출력 형식은 0점 처리됩니다.❗️
-*/
+// inorder 방식으로 트리 순회(재귀)
+// 현재 코드에서는 사용 X (연산자 오버로딩으로 대체함)
 template <class _NodePtr>
 void __inorder(_NodePtr __x) {
 	// "<" + left + " " + root_key + " " + right + ">"
@@ -111,80 +117,146 @@ void __inorder(_NodePtr __x) {
 	std::cout << ">";
 }
 
-/*
-* 아래 함수는 삽입된 노드의 위치와 삽입 여부를 반환합니다.
-* 예시) 이미 같은 키 값이 존재하는 경우: return std::pair<_NodePtr, bool>(__p, false);
-*/
+// 입력 받은 _Tp타입으로 노드를 생성하는 함수
 template <class _NodePtr, class _Tp>
 _NodePtr __getNodeBST(_Tp key) {
 	return new Node<_Tp>(key);
 }
 
+// key값의 노드를 BST 트리 내에 삽입하는 함수
 template <class _NodePtr, class _Tp>
 std::pair<_NodePtr, bool> __insertBST(_NodePtr& __root, const _Tp& key) {
-	_NodePtr __p = __root;
-	_NodePtr __q = nullptr;
+	_NodePtr __p = __root;		// 넣을 위치 따라가는 변수
+	_NodePtr __q = nullptr;		// 넣을 위치의 부모 노드를 나타내는 변수
 
+	std::stack<_NodePtr> __stPtr;	// 높이 계산을 위한 변수
+
+	// __p 변수의 값이 nullptr이 아니라면
 	while (__p != nullptr) {
-		if (key == __p->__key_) return std::pair<_NodePtr, bool>(__p, false);
-		__q = __p;
-		if (key < __p->__key_) __p = __p->__left_;
-		else __p = __p->__right_;
-	}
+		if (key == __p->__key_) return std::pair<_NodePtr, bool>(__p, false);	// 이미 key가 BST 트리 내부에 있는 경우, 해당 key 노드의 주소와 false를 return 한다.
 
-	_NodePtr __newNode = __getNodeBST<_NodePtr, _Tp>(key);
+		__q = __p;									// __q에 __p를 저장
+		__stPtr.push(__q);							// 부모 노드를 stack에 push
+		if (key < __p->__key_) __p = __p->__left_;	// key값 작다면 왼쪽 서브트리로
+		else __p = __p->__right_;					// key값 크다면 오른쪽 서브트리로
+	} // 나왔을 때, __p = nullptr, __q = 새 노드의 부모 노드
 
-	if (__root == nullptr) __root = __newNode;
-	else if (key < __q->__key_) __q->__left_ = __newNode;
-	else __q->__right_ = __newNode;
+	_NodePtr __newNode = __getNodeBST<_NodePtr, _Tp>(key);	// 새 노드 생성
 
-	return std::pair<_NodePtr, bool>(__newNode, true);
+	if (__root == nullptr) __root = __newNode;				// root 노드가 nullptr이면 이 노드를 root노드로(참조형으로 받은 이유)
+	else if (key < __q->__key_) __q->__left_ = __newNode;	// 부모(__q) 노드의 key 값보다 작다면 왼쪽에 노드로 추가
+	else __q->__right_ = __newNode;							// 부모(__q) 노드의 key 값보다 크다면 오른쪽에 노드로 추가
+
+	// stack에는 지금까지 거쳐온 부모 노드의 path가 저장됨
+	while (!__stPtr.empty()) // stack의 내부가 비어있지 않다면
+	{
+		__q = __stPtr.top();											// stack의 제일 위의 값을 __q 변수에 저장
+		__stPtr.pop();													// stack 제일 위 제거
+
+		// __q의 높이는 왼쪽과 오른쪽 트리의 높이 중 큰 값에 +1한 값이다.
+		__q->__height_ = 1 + max(((__q->__left_ != nullptr) ? __q->__left_->__height_ : 0), ((__q->__right_ != nullptr) ? __q->__right_->__height_ : 0));
+		// __q의 크기는 왼쪽과 오른쪽 트리의 크기의 합에 +1한 값이다.
+		__q->__size_ = 1 + ((__q->__left_ != nullptr) ? __q->__left_->__size_ : 0) + ((__q->__right_ != nullptr) ? __q->__right_->__size_ : 0);
+	} 
+
+	return std::pair<_NodePtr, bool>(__newNode, true); // 새 노드의 주소와 true를 return한다.
 }
 
-/*
-* Root node가 삭제되는 경우를 고려하여 매개 변수 "__root" 를 참조 타입으로 받도록 설계하였습니다.
-* "__root = 대체될 노드"로 BST class의 멤버 변수 __root_ 값을 변경할 수 있습니다.
-* 현재 로직에서 존재하지 않는 key를 erase하려고 할 때, nullptr을 반환해야 정상 작동하도록 설계되어 있습니다.
-*/
+// key값의 노드를 BST 트리 내에서 찾는 함수
 template <class _NodePtr, class _Tp>
-_NodePtr __searchBST(_NodePtr __root, const _Tp& key) {
-	_NodePtr __p = __root;
-	if (__p == nullptr) return nullptr;
-	else if (key == __p->__key_) return __p;
-	else if (key < __p->__key_) return __searchBST(__p->__left_, key);
-	else return __searchBST(__p->__right_, key);
-}
-
-template <class _NodePtr, class _Tp>
-_NodePtr __searchParent(_NodePtr __root, const _Tp& key) {
+_NodePtr __searchBST(_NodePtr __root, const _Tp& key, std::stack<_NodePtr>& stk) {
 	_NodePtr __q = nullptr;
 	_NodePtr __p = __root;
-	
-	while (__p != nullptr)
+
+	while (__p != nullptr && key != __p->__key_)
 	{
-		if (key == __p->__key_) return __q;
-		
 		__q = __p;
-		if (key < __p->__key_) __p = __p->__left_;
+		stk.push(__q);
+		if (key == __p->__key_) break;
+		else if (key < __p->__key_) __p = __p->__left_;
 		else __p = __p->__right_;
 	}
-	
-	return nullptr;
+
+	return __p;
 }
 
+// key 값의 노드를 BST 트리에서 삭제하는 함수
 template <class _NodePtr, class _Tp>
 _NodePtr __eraseBST(_NodePtr& __root, const _Tp& key) {
-	_NodePtr __p = __searchBST(__root, key);
-	_NodePtr __q = __searchParent(__root, key);
+	std::stack<_NodePtr> __stPtr;	// root노드에서 삭제하려는 노드까지의 path가 들어갈 스택
 
-	if (__p == nullptr) return __q; // __root에 삭제할 노드가 없는 경우
+	_NodePtr __p = __searchBST(__root, key, __stPtr);											// 삭제하려는 노드
+	_NodePtr __q = (!__stPtr.empty()) ? __stPtr.top() : nullptr;								// 삭제하려는 노드의 부모 노드(root면 empty stack)
 
+	if (__p == nullptr) return nullptr;								// __root에 삭제할 key 값의 노드가 없는 경우
+
+	// 삭제할 노드의 차수가 2인 경우
+	if (__p->__left_ != nullptr && __p->__right_ != nullptr)	
+	{
+		_NodePtr __tempNode = __p;	// 삭제하려는 노드 임시 저장
+		__stPtr.push(__p);			// 삭제하려는 노드 stack에 저장(나중에 높이, 크기 계산의 위해)
+
+		// 왼쪽 서브트리의 높이가 오른쪽 서브트리의 높이보다 작거나, 높이가 같을 때 왼쪽 서브트리의 노드 수가 오른쪽 서브트리의 노드 서브트리의 노드 수 보다 작다면
+		if ((__p->__left_->__height_ < __p->__right_->__height_) || ((__p->__left_->__height_ == __p->__right_->__height_) && (__p->__left_->__size_ < __p->__right_->__size_)))
+		{
+			// 오른쪽 서브트리에서 최소값 찾기
+			__p = __p->__right_;
+			__p = __tree_min(__p, __stPtr);
+		}
+		// 왼쪽 서브트리의 높이가 오른쪽 서브트리의 높이보다 높거나, 높이가 같을 때 왼쪽 서브트리의 노드 수가 오른쪽 서브트리의 노드 서브트리의 노드 수 보다 크다면
+		else 
+		{
+			// 왼쪽 서브트리에서 최대값 찾기
+			__p = __p->__left_;
+			__p = __tree_max(__p, __stPtr);
+		}
+
+		__tempNode->__key_ = __p->__key_;		// 삭제할 노드의 key 값을 대신할 노드의 key 값 대입
+		__q = __stPtr.top();					// 대신한 노드의 부모 노드
+	}
+
+	// 차수가 2 였던 경우, 위의 조건문을 통해 root 노드의 왼쪽 서브트리의 최대 key 값 단말노드 혹은 오른쪽 서브트리의 최소 key 값 단말노드로 __p가 되고, __q는 __p의 부모 노드가 되므로, 차수가 0이 됨
+	// 현재 차수가 0 또는 1인 경우
+	if (__p->__left_ != nullptr)		// 삭제할 노드의 왼쪽 서브트리가 존재할 때
+	{
+		if (__q == nullptr) __root = __root->__left_;					// __p가 root 노드인 경우
+		else if (__q->__left_ == __p) __q->__left_ = __p->__left_;		// __q의 왼쪽 서브트리의 root노드가 __p인 경우
+		else __q->__right_ = __p->__left_;								// __q의 오른쪽 서브트리의 root노드가 __p인 경우
+	}
+	else if (__p->__right_ != nullptr)	// 삭제할 노드의 오른쪽 서브트리가 존재할 때
+	{
+		if (__q == nullptr) __root = __root->__right_;					// __p가 root 노드인 경우
+		else if (__q->__left_ == __p) __q->__left_ = __p->__right_;		// __q의 왼쪽 서브트리의 root노드가 __p인 경우
+		else __q->__right_ = __p->__right_;								// __q의 오른쪽 서브트리의 root노드가 __p인 경우
+	}
+	else								// 삭제할 노드의 서브트리가 없을 때
+	{
+		if (__q == nullptr) __root = nullptr;						// __p가 root 노드인 경우
+		else if (__q->__left_ == __p) __q->__left_ = nullptr;		// __q의 왼쪽 서브트리의 root노드가 __p인 경우
+		else __q->__right_ = nullptr;								// __q의 오른쪽 서브트리의 root노드가 __p인 경우
+	}
+
+	while (!__stPtr.empty())
+	{
+		__q = __stPtr.top();
+		__stPtr.pop();
+
+		// __q의 높이는 왼쪽과 오른쪽 트리의 높이 중 큰 값에 +1한 값이다.
+		__q->__height_ = 1 + max(((__q->__left_ != nullptr) ? __q->__left_->__height_ : 0), ((__q->__right_ != nullptr) ? __q->__right_->__height_ : 0));
+		// __q의 크기는 왼쪽과 오른쪽 트리의 크기의 합에 +1한 값이다.
+		__q->__size_ = 1 + ((__q->__left_ != nullptr) ? __q->__left_->__size_ : 0) + ((__q->__right_ != nullptr) ? __q->__right_->__size_ : 0);
+	}
+
+	return __p; // 삭제할 노드를 return
+
+	/*
+	// 교안에 나온 수도 코드를 바탕으로 만든 코드
 	// 삭제 노드 차수 0
 	if (__p->__left_ == nullptr && __p->__right_ == nullptr) 
 	{   
-		if (__q == nullptr) // 만약 __p가 루트 노드라면
+		if (__q == nullptr)								// 만약 __p가 루트 노드(차수 0)라면
 		{
-			__root = nullptr; // 참조자로 받은 이유
+			__root = nullptr;							// root를 nullptr로 만들기 (BST 트리 완전히 비워짐, 참조자로 받은 이유)
 			return __p;
 		}
 		if (__q->__left_ == __p) __q->__left_ = nullptr;
@@ -254,18 +326,53 @@ _NodePtr __eraseBST(_NodePtr& __root, const _Tp& key) {
 		if (isLeft == true) return __eraseBST(__p->__left_, __r->__key_);
 		else return __eraseBST(__p->__right_, __r->__key_);
 	}
+	*/
+
 }
 
-// Dangling pointer를 방지하기 위해 __x를 참조 타입으로 받도록 설계하였습니다.
+// __x를 root 노드로 가지는 트리를 전부 해제하는 함수
 template <class _NodePtr>
 void __clear(_NodePtr& __x) {
-	// write your own code here
-	// post order
-	if (__x == nullptr) return;
+	_NodePtr __p = __x;
+	_NodePtr __temp = nullptr;
+	std::stack<_NodePtr> stk;
 
+	while (__p != nullptr)
+	{
+		if (__p->__left_ != nullptr)		// 왼쪽 서브트리가 있을 때
+		{
+			stk.push(__p);
+			__temp = __p->__left_;
+			__p->__left_ = nullptr;	// 이 이후에 __p를 다시 방문했을 땐, 왼쪽 서브트리는 다 지워진 채로 방문하게 되기 때문에 nullptr를 미리 대입
+			__p = __temp;
+
+			continue;
+		}
+		else if (__p->__right_ != nullptr)	// 오른쪽 서브트리가 있을 때
+		{
+			stk.push(__p);
+			__temp = __p->__right_;
+			__p->__right_ = nullptr;	// 이 이후에 __p를 다시 방문했을 땐, 오른쪽 서브트리는 다 지워진 채로 방문하게 되기 때문에 nullptr를 미리 대입
+			__p = __temp;
+			continue;
+		}
+		else								// 단말노드일 때
+		{
+			delete __p;
+			__p = stk.top();
+			stk.pop();
+		}
+	}
+
+	__x = nullptr;
+
+	/*
+	// 재귀로 구현
+	if (__x == nullptr) return;
 	__clear(__x->__left_);
 	__clear(__x->__right_);
 	delete __x;
+	*/
 }
 
 // 아래는 반드시 사용해야하는 BST 클래스입니다.
@@ -321,6 +428,7 @@ class BST {
 			// Or memory leak will occur
 			delete __r;
 
+			// dangling pointer
 			return __r; 
 		}
 
@@ -344,7 +452,7 @@ class BST {
 * 반드시 아래의 main 함수를 사용해야할 필요는 없습니다.
 * ❗️새로 구현하실 경우, 출력 형식에 주의하세요.❗️
 */
-int main() {
+int main(int argc, char **argv) {
 	BST<int>	tree;
 	char		command;
 	int			key;
