@@ -344,7 +344,7 @@ class BST {
 * 반드시 아래의 main 함수를 사용해야할 필요는 없습니다.
 * ❗️새로 구현하실 경우, 출력 형식에 주의하세요.❗️
 */
-int main(int argc, char **argv) {
+int main() {
 	BST<int>	tree;
 	char		command;
 	int			key;
