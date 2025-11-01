@@ -65,7 +65,7 @@ unsigned __height(_NodePtr __x) {  // unsigned int의 약어
 	return (lh > rh) ? lh + 1 : rh + 1;*/
 
 	// 노드의 높이를 멤버 변수로 넣었을 때
-	return __x.__height_;
+	return (__x != nullptr) ? __x->__height_ : 0;
 }
 
 // 노드의 크기를 반환하는 함수
@@ -78,7 +78,7 @@ unsigned __size(_NodePtr __x) {
 	return __size(__x->__left_) + __size(__x->__right_)  + 1;*/
 
 	// 노드의 크기를 멤버 변수로 넣었을 때
-	return __x.__size_;
+	return (__x != nullptr) ? __x->__size_ : 0;
 }
 
 // 주어진 노드를 루트 노드로 하는 트리에서 최소 key값을 가진 노드를 찾는 함수
@@ -154,9 +154,9 @@ std::pair<_NodePtr, bool> __insertBST(_NodePtr& __root, const _Tp& key) {
 		__stPtr.pop();													// stack 제일 위 제거
 
 		// __q의 높이는 왼쪽과 오른쪽 트리의 높이 중 큰 값에 +1한 값이다.
-		__q->__height_ = 1 + max(((__q->__left_ != nullptr) ? __q->__left_->__height_ : 0), ((__q->__right_ != nullptr) ? __q->__right_->__height_ : 0));
+		__q->__height_ = 1 + max(__height(__q->__left_), __height(__q->__right_));
 		// __q의 크기는 왼쪽과 오른쪽 트리의 크기의 합에 +1한 값이다.
-		__q->__size_ = 1 + ((__q->__left_ != nullptr) ? __q->__left_->__size_ : 0) + ((__q->__right_ != nullptr) ? __q->__right_->__size_ : 0);
+		__q->__size_ = 1 + __size(__q->__left_) + __size(__q->__right_);
 	} 
 
 	return std::pair<_NodePtr, bool>(__newNode, true); // 새 노드의 주소와 true를 return한다.
@@ -198,7 +198,7 @@ _NodePtr __eraseBST(_NodePtr& __root, const _Tp& key) {
 		__stPtr.push(__p);			// 삭제하려는 노드 stack에 저장(나중에 높이, 크기 계산의 위해)
 
 		// 왼쪽 서브트리의 높이가 오른쪽 서브트리의 높이보다 작거나, 높이가 같을 때 왼쪽 서브트리의 노드 수가 오른쪽 서브트리의 노드 서브트리의 노드 수 보다 작다면
-		if ((__p->__left_->__height_ < __p->__right_->__height_) || ((__p->__left_->__height_ == __p->__right_->__height_) && (__p->__left_->__size_ < __p->__right_->__size_)))
+		if ((__height(__p->__left_) < __height(__p->__right_)) || ((__height(__p->__left_) == __height(__p->__right_)) && (__size(__p->__left_) < __size(__p->__right_))))
 		{
 			// 오른쪽 서브트리에서 최소값 찾기
 			__p = __p->__right_;
@@ -243,9 +243,9 @@ _NodePtr __eraseBST(_NodePtr& __root, const _Tp& key) {
 		__stPtr.pop();
 
 		// __q의 높이는 왼쪽과 오른쪽 트리의 높이 중 큰 값에 +1한 값이다.
-		__q->__height_ = 1 + max(((__q->__left_ != nullptr) ? __q->__left_->__height_ : 0), ((__q->__right_ != nullptr) ? __q->__right_->__height_ : 0));
+		__q->__height_ = 1 + max(__height(__q->__left_), __height(__q->__right_));
 		// __q의 크기는 왼쪽과 오른쪽 트리의 크기의 합에 +1한 값이다.
-		__q->__size_ = 1 + ((__q->__left_ != nullptr) ? __q->__left_->__size_ : 0) + ((__q->__right_ != nullptr) ? __q->__right_->__size_ : 0);
+		__q->__size_ = 1 + __size(__q->__left_) + __size(__q->__right_);
 	}
 
 	return __p; // 삭제할 노드를 return
