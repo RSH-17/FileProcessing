@@ -12,6 +12,14 @@
 *
 */
 
+/*
+
+20223072 류시현 - 화일처리 BST 코드 구현
+
+*/
+
+
+
 #include <iostream>
 #include <stack>
 
@@ -129,7 +137,7 @@ std::pair<_NodePtr, bool> __insertBST(_NodePtr& __root, const _Tp& key) {
 	_NodePtr __p = __root;		// 넣을 위치 따라가는 변수
 	_NodePtr __q = nullptr;		// 넣을 위치의 부모 노드를 나타내는 변수
 
-	std::stack<_NodePtr> __stPtr;	// 높이 계산을 위한 변수
+	std::stack<_NodePtr> __stPtr;	// 높이 계산을 위한 스택
 
 	// __p 변수의 값이 nullptr이 아니라면
 	while (__p != nullptr) {
@@ -173,8 +181,7 @@ _NodePtr __searchBST(_NodePtr __root, const _Tp& key, std::stack<_NodePtr>& stk)
 		__q = __p;
 		stk.push(__q);
 		
-		if (key == __p->__key_) break;
-		else if (key < __p->__key_) __p = __p->__left_;
+		if (key < __p->__key_) __p = __p->__left_;
 		else __p = __p->__right_;
 	}
 
@@ -344,7 +351,7 @@ void __clear(_NodePtr& __x) {
 		{
 			stk.push(__p);
 			__temp = __p->__left_;
-			__p->__left_ = nullptr;	// 이 이후에 __p를 다시 방문했을 땐, 왼쪽 서브트리는 다 지워진 채로 방문하게 되기 때문에 nullptr를 미리 대입
+			__p->__left_ = nullptr;		// 이 이후에 __p를 다시 방문했을 땐, 왼쪽 서브트리는 다 지워진 채로 방문하게 되기 때문에 nullptr를 미리 대입
 			__p = __temp;
 
 			continue;
@@ -360,12 +367,12 @@ void __clear(_NodePtr& __x) {
 		else								// 단말노드일 때
 		{
 			delete __p;
-			if (!stk.empty())
+			if (!stk.empty()) // 스택에 무언가 있다면
 			{
 				__p = stk.top();
 				stk.pop();
 			}
-			else {
+			else {			// 스택이 비었다면, root 노드까지 delete 된 상태이므로 __p를 nullptr로 초기화
 				__p = nullptr;
 			}
 		}
