@@ -65,7 +65,7 @@ unsigned __height(_NodePtr __x) {  // unsigned int의 약어
 	return (lh > rh) ? lh + 1 : rh + 1;*/
 
 	// 노드의 높이를 멤버 변수로 넣었을 때
-	return (__x != nullptr) ? __x->__height_ : 0;
+	return __x  ? __x->__height_ : 0u;
 }
 
 // 노드의 크기를 반환하는 함수
@@ -78,7 +78,7 @@ unsigned __size(_NodePtr __x) {
 	return __size(__x->__left_) + __size(__x->__right_)  + 1;*/
 
 	// 노드의 크기를 멤버 변수로 넣었을 때
-	return (__x != nullptr) ? __x->__size_ : 0;
+	return __x ? __x->__size_ : 0u;
 }
 
 // 주어진 노드를 루트 노드로 하는 트리에서 최소 key값을 가진 노드를 찾는 함수
@@ -364,6 +364,9 @@ void __clear(_NodePtr& __x) {
 			{
 				__p = stk.top();
 				stk.pop();
+			}
+			else {
+				__p = nullptr;
 			}
 		}
 	}
