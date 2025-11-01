@@ -173,7 +173,8 @@ _NodePtr __searchBST(_NodePtr __root, const _Tp& key, std::stack<_NodePtr>& stk)
 		__q = __p;
 		stk.push(__q);
 		
-		if (key < __p->__key_) __p = __p->__left_;
+		if (key == __p->__key_) break;
+		else if (key < __p->__key_) __p = __p->__left_;
 		else __p = __p->__right_;
 	}
 
