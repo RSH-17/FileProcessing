@@ -172,8 +172,8 @@ _NodePtr __searchBST(_NodePtr __root, const _Tp& key, std::stack<_NodePtr>& stk)
 	{
 		__q = __p;
 		stk.push(__q);
-		if (key == __p->__key_) break;
-		else if (key < __p->__key_) __p = __p->__left_;
+		
+		if (key < __p->__key_) __p = __p->__left_;
 		else __p = __p->__right_;
 	}
 
@@ -359,8 +359,11 @@ void __clear(_NodePtr& __x) {
 		else								// 단말노드일 때
 		{
 			delete __p;
-			__p = stk.top();
-			stk.pop();
+			if (!stk.empty())
+			{
+				__p = stk.top();
+				stk.pop();
+			}
 		}
 	}
 
@@ -452,7 +455,7 @@ class BST {
 * 반드시 아래의 main 함수를 사용해야할 필요는 없습니다.
 * ❗️새로 구현하실 경우, 출력 형식에 주의하세요.❗️
 */
-int main(int argc, char **argv) {
+int main() {
 	BST<int>	tree;
 	char		command;
 	int			key;
