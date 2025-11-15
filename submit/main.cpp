@@ -483,6 +483,8 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
 
     std::pair<NodePtr, std::stack<NodePtr> > insertPath = _searchBST(_root, key);
     NodePtr p = insertPath.first;
+
+    if (p == _root) insertPath.second.push(p);
     
     // 불균형한 노드가 아니라면 stack을 계속 비우면서 올라가봐라
     if (!(p != nullptr && (p->get_bf() > 1 || p->get_bf() < -1)))
