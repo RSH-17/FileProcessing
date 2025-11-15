@@ -153,7 +153,7 @@ unsigned _size(NodePtr _x)
 
 // _x를 root node로 하는 BST의 최솟값을 찾고, _x에서부터 해당 노드의 부모 노드까지의 path와 해당 노드를 반환하는 함수
 template <class NodePtr>
-std::pair<NodePtr, std::stack<NodePtr>> _tree_min(NodePtr _x)
+std::pair<NodePtr, std::stack<NodePtr> > _tree_min(NodePtr _x)
 {
     assert(_x != nullptr); // nullptr이 들어왔을 때, 오류
 
@@ -163,12 +163,12 @@ std::pair<NodePtr, std::stack<NodePtr>> _tree_min(NodePtr _x)
         stk.push(_x);
         _x = _x->get_left_node();
     }
-    return { _x, stk };
+    return std::make_pair( _x, stk );
 }
 
 // _x를 root node로 하는 BST의 최댓값을 찾고, _x에서부터 해당 노드의 부모 노드까지의 path와 해당 노드를 반환하는 함수
 template <class NodePtr>
-std::pair<NodePtr, std::stack<NodePtr>> _tree_max(NodePtr _x)
+std::pair<NodePtr, std::stack<NodePtr> > _tree_max(NodePtr _x)
 {
     assert(_x != nullptr); // nullptr이 들어왔을 때, 오류
 
@@ -178,7 +178,7 @@ std::pair<NodePtr, std::stack<NodePtr>> _tree_max(NodePtr _x)
         stk.push(_x);
         _x = _x->get_right_node();
     }
-    return { _x, stk };
+    return std::make_pair( _x, stk );
 }
 
 // _x를 root node로 하는 트리를 inorder 방식으로 순회하는 함수
@@ -289,7 +289,7 @@ std::pair<NodePtr, bool> _insertBST(NodePtr& _root, const Tp& key)
 
 // _root를 root node로 하는 tree에서 key 값의 노드를 찾고, _root에서부터 해당 노드의 부모 노드까지의 path와 해당 노드를 반환하는 함수
 template <class NodePtr, class Tp>
-std::pair<NodePtr, std::stack<NodePtr>> _searchBST(NodePtr& _root, const Tp& key)
+std::pair<NodePtr, std::stack<NodePtr> > _searchBST(NodePtr& _root, const Tp& key)
 {
     NodePtr q = nullptr;
     NodePtr p = _root;
@@ -306,15 +306,15 @@ std::pair<NodePtr, std::stack<NodePtr>> _searchBST(NodePtr& _root, const Tp& key
     }
 
     // key 값이 없는 경우에도 key 값이 삽입되어있다는 가정 하의 root 노드부터 부모 노드까지 path - stack 반환 (이 경우 p = nullptr)
-    return { p, stk };
+    return std::make_pair( p, stk );
 }
 
 // _root를 root node로 하는 tree에서 key 값의 노드를 삭제하고, 해당 노드의 주소를 반환하는 함수 (삭제 불가하면 nullptr 반환)
 template <class NodePtr, class Tp>
 NodePtr _eraseBST(NodePtr& _root, const Tp& key)
 {
-    std::pair<NodePtr, std::stack<NodePtr>> search = _searchBST(_root, key);    // key node와 root node 부터 key 노드까지의 path
-    std::pair<NodePtr, std::stack<NodePtr>> _tempStack {};                         // 차수가 2일 때, 삭제할 key 노드부터 대체할 노드까지의 path
+    std::pair<NodePtr, std::stack<NodePtr> > search = _searchBST(_root, key);    // key node와 root node 부터 key 노드까지의 path
+    std::pair<NodePtr, std::stack<NodePtr> > _tempStack {};                         // 차수가 2일 때, 삭제할 key 노드부터 대체할 노드까지의 path
 
     NodePtr p = search.first;                                                   // key 노드 (삭제하려는 노드)
     NodePtr q = (!search.second.empty()) ? search.second.top() : nullptr;       // 삭제하려는 노드의 부모 노드(root면 empty stack)
@@ -479,9 +479,9 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
 {
     // _insertBST와 _eraseBST에서 각각 node의 데이터를 마지막에 최신화시키기에 항상 모든 노드의 balance factor는 최신화된 상태이다. (새로 삽입된 노드에서부터 root까지가 전부 bf가 바뀌었다.)
     // 여기에서 말하는 key는 새로 삽입된 key이다.
-    if (_root == nullptr) return { nullptr, ROTATION(NO) };
+    if (_root == nullptr) return std::make_pair((NodePtr)0, ROTATION(NO));
 
-    std::pair<NodePtr, std::stack<NodePtr>> insertPath = _searchBST(_root, key);
+    std::pair<NodePtr, std::stack<NodePtr> > insertPath = _searchBST(_root, key);
     NodePtr p = insertPath.first;
     
     // 불균형한 노드가 아니라면 stack을 계속 비우면서 올라가봐라
@@ -505,16 +505,16 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
     // 불균형 노드 bf가 -2일 때, 자식 노드 bf가 0이면 RR
  
     if (p == nullptr || insertPath.second.empty()) // 새로 삽입된 키가 root인 경우 또는 불균형 노드가 발생하지 않은 경우
-        return { p, ROTATION(NO) };
+        return std::make_pair( p, ROTATION(NO) );
     else if (p->get_bf() > 1) // 왼쪽 서브트리에 새로운 key가 삽입됨
     {
-        if (p->get_left_node()->get_bf() >= 0) return {p, ROTATION(LL)};
-        else return { p, ROTATION(LR) };
+        if (p->get_left_node()->get_bf() >= 0) return std::make_pair( p, ROTATION(LL) );
+        else return std::make_pair( p, ROTATION(LR) );
     }
     else if (p->get_bf() < -1)
     {
-        if (p->get_right_node()->get_bf() > 0) return {p, ROTATION(RL)};
-        else return { p, ROTATION(RR) };
+        if (p->get_right_node()->get_bf() > 0) return std::make_pair( p, ROTATION(RL));
+        else return std::make_pair( p, ROTATION(RR) );
     }
 }
 
@@ -525,7 +525,7 @@ void _rotateTree(NodePtr& _root, const Tp& key)
 {
     std::pair<NodePtr, ROTATION> balance = _checkBalance(_root, key);
 
-    std::pair<NodePtr, std::stack<NodePtr>> search{};
+    std::pair<NodePtr, std::stack<NodePtr> > search{};
     if (balance.first != nullptr)
        search = _searchBST(_root, balance.first->get_key());  // stack의 마지막 두개는 불균형 노드와 삽입 노드의 부모이다.
 
@@ -597,8 +597,8 @@ template <class NodePtr, class Tp>
 NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
 {
     // 1. 일단 key를 찾는다.
-    std::pair<NodePtr, std::stack<NodePtr>> searchKey = _searchBST(_root, key);  // key값의 노드와 key까지의 경로가 저장된 변수
-    std::pair<NodePtr, std::stack<NodePtr>> keyToSub{}; // 차수가 2일 때, key부터 대체될 노드까지의 경로가 저장될 변수
+    std::pair<NodePtr, std::stack<NodePtr> > searchKey = _searchBST(_root, key);  // key값의 노드와 key까지의 경로가 저장된 변수
+    std::pair<NodePtr, std::stack<NodePtr> > keyToSub{}; // 차수가 2일 때, key부터 대체될 노드까지의 경로가 저장될 변수
 
     // 2. key가 tree 내부에 존재하는지 확인
     if (searchKey.first == nullptr) return searchKey.first;
