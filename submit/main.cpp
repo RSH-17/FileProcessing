@@ -644,12 +644,15 @@ NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
             // root가 아닌 경우
             else if (searchKey.second.top()->get_key() > key) // 왼쪽
                 _rotateTree(_root, searchKey.second.top()->get_left_node()->get_key());
-            else
+            else // 오른쪽
                 _rotateTree(_root, searchKey.second.top()->get_right_node()->get_key());
         }
         else
         {
-            _rotateTree(_root, key); // 차수가 0인 경우
+            if (searchKey.second.empty())
+                _rotateTree(_root, key); // 차수가 0일 때, root인 경우
+            else
+                _rotateTree(_root, searchKey.second.top()->get_key());
         }
             
     }
