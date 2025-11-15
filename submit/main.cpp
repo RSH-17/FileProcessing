@@ -294,7 +294,7 @@ std::pair<NodePtr, std::stack<NodePtr> > _searchBST(NodePtr& _root, const Tp& ke
     NodePtr q = nullptr;
     NodePtr p = _root;
 
-    std::stack<NodePtr> stk{};
+    std::stack<NodePtr> stk;
 
     while (p != nullptr && key != p->get_key())
     {
@@ -314,7 +314,7 @@ template <class NodePtr, class Tp>
 NodePtr _eraseBST(NodePtr& _root, const Tp& key)
 {
     std::pair<NodePtr, std::stack<NodePtr> > search = _searchBST(_root, key);    // key node와 root node 부터 key 노드까지의 path
-    std::pair<NodePtr, std::stack<NodePtr> > _tempStack {};                         // 차수가 2일 때, 삭제할 key 노드부터 대체할 노드까지의 path
+    std::pair<NodePtr, std::stack<NodePtr> > _tempStack;                         // 차수가 2일 때, 삭제할 key 노드부터 대체할 노드까지의 path
 
     NodePtr p = search.first;                                                   // key 노드 (삭제하려는 노드)
     NodePtr q = (!search.second.empty()) ? search.second.top() : nullptr;       // 삭제하려는 노드의 부모 노드(root면 empty stack)
@@ -525,7 +525,7 @@ void _rotateTree(NodePtr& _root, const Tp& key)
 {
     std::pair<NodePtr, ROTATION> balance = _checkBalance(_root, key);
 
-    std::pair<NodePtr, std::stack<NodePtr> > search{};
+    std::pair<NodePtr, std::stack<NodePtr> > search;
     if (balance.first != nullptr)
        search = _searchBST(_root, balance.first->get_key());  // stack의 마지막 두개는 불균형 노드와 삽입 노드의 부모이다.
 
@@ -598,7 +598,7 @@ NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
 {
     // 1. 일단 key를 찾는다.
     std::pair<NodePtr, std::stack<NodePtr> > searchKey = _searchBST(_root, key);  // key값의 노드와 key까지의 경로가 저장된 변수
-    std::pair<NodePtr, std::stack<NodePtr> > keyToSub{}; // 차수가 2일 때, key부터 대체될 노드까지의 경로가 저장될 변수
+    std::pair<NodePtr, std::stack<NodePtr> > keyToSub; // 차수가 2일 때, key부터 대체될 노드까지의 경로가 저장될 변수
 
     // 2. key가 tree 내부에 존재하는지 확인
     if (searchKey.first == nullptr) return searchKey.first;
@@ -679,7 +679,7 @@ public: // Capacity
 
     size_type size() const {
         return _size(_root);
-    }
+    } 
 
 public: // Lookup
     void inorder() const {
@@ -713,7 +713,7 @@ public: // Modifier
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char** argv) {
+int main() {
     AVL<int>   tree;
     char      command;
     int         key;
