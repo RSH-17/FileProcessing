@@ -461,6 +461,16 @@ void _tree_right_rotate(NodePtr& _root, NodePtr _x)
     }
 }
 
+/*
+함수 설명:
+- 테스트를 위해 삽입한 함수, 각 노드의 높이, 크기, 균형인수를 출력한다.
+
+반환 값 설명:
+- 반환하지 않음
+
+매개변수 설명:
+- _root : tree의 루트 노드
+*/
 template <class NodePtr>
 void preorder(NodePtr _root)
 {
@@ -472,8 +482,17 @@ void preorder(NodePtr _root)
     preorder(_root->get_right_node());
 }
 
+/*
+함수 설명:
+- tree의 구조가 현재 불균형한지 파악하는 함수
 
-//  불균형 노드와 회전 타입을 반환하는 함수
+반환 값 설명:
+- 불균형 노드와 회전 타입을 반환
+
+매개변수 설명:
+- _root : tree의 루트 노드, root에서 key까지의 balance 이상 여부 확인 위해 입력
+- key    : 새로 삽입된 key값 혹은 삭제한 노드의 부모노드의 key값(차수 0), 반대편 같은 레벨의 key값(차수1), 대체당해 사라진 노드의 부모노드 key값(차수2)
+*/
 template <class NodePtr, class Tp>
 std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
 {
@@ -484,7 +503,7 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
     std::pair<NodePtr, std::stack<NodePtr> > insertPath = _searchBST(_root, key);
     NodePtr p = insertPath.first;
 
-    if (p == _root) insertPath.second.push(p);
+    if (p == _root) insertPath.second.push(p); // eraseBST 이후 실행될 때, 삭제 노드의 부모 노드가 root일 때, insertPath.second가 empty가 되는 것 방지
     
     // 불균형한 노드가 아니라면 stack을 계속 비우면서 올라가봐라
     if (!(p != nullptr && (p->get_bf() > 1 || p->get_bf() < -1)))
@@ -522,8 +541,19 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
     return std::make_pair((NodePtr)0, ROTATION(NO));
 }
 
-// _root를 root node로 하는 트리의 불균형이 일어난 노드에서 tree 회전하는 함수
-// 레포트 형식 변경 : _rotateTree(T) -> _rotateTree(T, key) :  매개변수 - 구현 상 key 값 필요하여 추가
+/*
+함수 설명:
+- checkBalance함수를 통해 받은 불균형 노드와 회전 방향에 따라 tree를 회전시키는 함수
+
+반환 값 설명:
+- 반환하지 않음
+
+매개변수 설명:
+- _root : tree의 루트 노드, root에서 key까지의 balance 이상 여부 확인 위해 입력
+- key    : 새로 삽입된 key값 혹은 삭제한 노드의 부모노드의 key값(차수 0), 반대편 같은 레벨의 key값(차수1), 대체당해 사라진 노드의 부모노드 key값(차수2)
+
+레포트 형식 변경 : _rotateTree(T) -> _rotateTree(T, key) :  매개변수 - 구현 상 key 값 필요하여 추가
+*/
 template <class NodePtr, class Tp>
 void _rotateTree(NodePtr& _root, const Tp& key)
 {
@@ -585,6 +615,17 @@ void _rotateTree(NodePtr& _root, const Tp& key)
     }
 }
 
+/*
+함수 설명:
+- AVL Tree에 key 값의 노드를 삽입하는 함수
+
+반환 값 설명:
+- 삽입된 노드의 주소와 삽입되었는지 확인하는 논리값
+
+매개변수 설명:
+- _root : tree의 루트 노드
+- key    : 새로 삽입할 key값
+*/
 template <class NodePtr, class Tp>
 std::pair<NodePtr, bool> _insertAVL(NodePtr& _root, const Tp& key)
 {
@@ -597,6 +638,17 @@ std::pair<NodePtr, bool> _insertAVL(NodePtr& _root, const Tp& key)
     return newNode;
 }
 
+/*
+함수 설명:
+- AVL Tree에 key 값의 노드를 삭제하는 함수
+
+반환 값 설명:
+- tree에서 삭제한 노드의 주소를 반환(아직 메모리 할당 해제 x)
+
+매개변수 설명:
+- _root : tree의 루트 노드
+- key    : 삭제할 key값
+*/
 template <class NodePtr, class Tp>
 NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
 {
