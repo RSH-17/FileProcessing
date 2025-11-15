@@ -639,7 +639,7 @@ NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
         }
         else if (searchKey.first->get_left_node() != nullptr || searchKey.first->get_right_node() != nullptr)
         {
-            if (eraseNode->get_key() == key) // 차수가 1일 때, root인 경우
+            if (searchKey.second.empty()) // 차수가 1일 때, root인 경우
                 _rotateTree(_root, key);
             // root가 아닌 경우
             else if (searchKey.second.top()->get_key() > key) // 왼쪽
@@ -653,6 +653,8 @@ NodePtr _eraseAVL(NodePtr& _root, const Tp& key)
         }
             
     }
+
+    // preorder(_root);
    
     return eraseNode;
 }
