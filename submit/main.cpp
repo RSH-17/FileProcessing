@@ -516,6 +516,8 @@ std::pair<NodePtr, ROTATION> _checkBalance(NodePtr _root, const Tp& key)
         if (p->get_right_node()->get_bf() > 0) return std::make_pair( p, ROTATION(RL));
         else return std::make_pair( p, ROTATION(RR) );
     }
+
+    return std::make_pair((NodePtr)0, ROTATION(NO));
 }
 
 // _root를 root node로 하는 트리의 불균형이 일어난 노드에서 tree 회전하는 함수
